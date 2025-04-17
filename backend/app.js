@@ -1,49 +1,59 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var mongoose = require('mongoose');
 require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const session = require('express-session');
+const path = require('path');
+const cookieParser = require('cookie-parser');
 
-const UserRouter = require('./routes/users.route');
-const PosteRouter = require('./routes/poste.route');
-const AuthRouter = require('./routes/auth.route');
-const DomaineRouter = require('./routes/domaine.route');
-const port = process.env.PORT;
+const app = express();
 
-const cors = require('cors');
+// ✅ Load Environment Variables & Check Important Keys
+if (!process.env.JWT_SECRET) {
+    console.error("⚠️ Warning: JWT_SECRET is missing in .env file");
+}
+if (!process.env.MONGO_URI) {
+    console.error("❌ Error: MONGO_URI is missing in .env file");
+    process.exit(1); // Stop the app if MongoDB URI is missing
+}
 
-var app = express();
-
-app.use(logger('dev'));
+// ✅ Middleware
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
-app.use('/public', express.static(path.join(__dirname, 'public/cv')));
-app.use('/public', express.static(path.join(__dirname, 'public/domaine_icon')));
-app.use('/public', express.static(path.join(__dirname, 'public/company_logo')));
 
-app.use(
-  cors({
-    methods: ['GET', 'POST', 'DELETE', 'PUT'],
-  })
-);
+// ✅ Session (must be before routes)
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'default_secret', // Provide a fallback
+    resave: false,
+    saveUninitialized: false
+}));
 
-mongoose.set('strictQuery', false);
-mongoose
-  .connect(process.env.MONGO_URL)
-  .then(() => {
-    console.log(
-      `DB_CONNECTED SUCCESSFULLY!! \n *** Hosting on http://localhost:${port} ***`
-    );
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+// ✅ Set View Engine
+app.set('view engine', 'ejs');
 
-app.use('/api/users', UserRouter);
-app.use('/api/poste', PosteRouter);
-app.use('/api/auth', AuthRouter);
-app.use('/api/domaine', DomaineRouter);
+// ✅ Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log('✅ MongoDB Connected'))
+    .catch(err => {
+        console.error('❌ MongoDB Connection Error:', err);
+        process.exit(1); // Stop app if DB connection fails
+    });
 
-module.exports = app;
+// ✅ Routes
+const authRoutes = require('./server/routes/auth');
+const mainRoutes = require('./server/routes/main');
+const appointmentRoutes = require('./server/routes/appointment');
+const professionalRoutes = require('./server/routes/professional');
+
+
+app.use('/auth', authRoutes);
+app.use('/appointments', appointmentRoutes);
+app.use('/', mainRoutes);
+app.use('/professionals', professionalRoutes);
+
+
+// ✅ Start Server
+const PORT = process.env.PORT || 5001;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
