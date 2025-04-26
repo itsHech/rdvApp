@@ -1,0 +1,107 @@
+.register-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #6B73FF 0%, #000DFF 100%);
+}
+
+.register-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+
+  h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+
+      &:focus {
+        border-color: #6B73FF;
+        outline: none;
+      }
+    }
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    background: #6B73FF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+
+    &:hover {
+      background: #5158FF;
+    }
+
+    &:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+  }
+
+  .login-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: #666;
+
+    a {
+      color: #6B73FF;
+      text-decoration: none;
+      font-weight: 500;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+// Add to both login.component.scss and register.component.scss
+.error-message {
+  color: #ff3e3e;
+  text-align: center;
+  margin: 10px 0;
+  font-size: 0.9rem;
+}
+
+.success-message {
+  color: #28a745;
+  text-align: center;
+  margin: 10px 0;
+  font-size: 0.9rem;
+}
+
+select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  background-color: white;
+  transition: border-color 0.3s;
+
+  &:focus {
+    border-color: #6B73FF;
+    outline: none;
+  }
+}

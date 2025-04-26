@@ -1,0 +1,48 @@
+<div class="register-container">
+  <div class="register-card">
+    <h2>Create Account</h2>
+    <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+      <div class="form-group">
+        <input type="text" [(ngModel)]="registerData.name" name="name" placeholder="Full Name" required>
+      </div>
+      <div class="form-group">
+        <input type="email" [(ngModel)]="registerData.email" name="email" placeholder="Email" required>
+      </div>
+      <div class="form-group">
+        <select [(ngModel)]="registerData.civility" name="civility" required>
+          <option value="">Select Civility</option>
+          <option value="Mr">Mr</option>
+          <option value="Mrs">Mrs</option>
+          <option value="Ms">Ms</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <input type="password" [(ngModel)]="registerData.password" name="password" placeholder="Password" required>
+      </div>
+      <div class="form-group">
+        <input type="date" [(ngModel)]="registerData.birthday" name="birthday" placeholder="Birthday" required>
+      </div>
+      <div class="form-group">
+        <input type="text" [(ngModel)]="registerData.governorate" name="governorate" placeholder="Governorate" required>
+      </div>
+      <div class="form-group">
+        <input type="tel" [(ngModel)]="registerData.phone" name="phone" placeholder="Phone Number" required>
+      </div>
+      <div class="form-group">
+        <input type="text" [(ngModel)]="registerData.profession" name="profession" placeholder="Profession" required>
+      </div>
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+      <div class="success-message" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+      <button type="submit" [disabled]="!registerForm.valid || isLoading">
+        {{ isLoading ? 'Creating Account...' : 'Sign Up' }}
+      </button>
+    </form>
+    <p class="login-link">
+      Already have an account? <a routerLink="/login">Login</a>
+    </p>
+  </div>
+</div>
