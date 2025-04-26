@@ -4,7 +4,9 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 
 // Show Register Page
-router.get('/register', userController.showRegisterPage);
+router.get('/register', (req, res) => {
+    res.json({ title: 'Register' });
+});
 
 // Handle Register
 router.post('/register', [
