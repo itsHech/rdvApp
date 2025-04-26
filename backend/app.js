@@ -5,8 +5,17 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const path = require("node:path");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
 const app = express();
+
+// Add CORS configuration before other middleware
+app.use(cors({
+    origin: 'http://localhost:4200', // Your Angular frontend URL
+    credentials: true,
+		methods: 'GET,POST,PUT,DELETE,OPTIONS', 
+    allowedHeaders: 'Origin,X-Requested-With,Content-Type,Accept,Authorization',
+}));
 
 // ✅ Load Environment Variables & Check Important Keys
 if (!process.env.JWT_SECRET) {
@@ -41,8 +50,9 @@ mongoose
 	.connect(process.env.MONGO_URI)
 	.then(() => console.log("✅ MongoDB Connected"))
 	.catch((err) => {
-		console.error("❌ MongoDB Connection Error:", err);
-		process.exit(1); // Stop app if DB connection fails
+		console.error("❌ MongoDB Connection Error:");
+		console.error(err);
+		process.exit(1);
 	});
 
 // ✅ Routes

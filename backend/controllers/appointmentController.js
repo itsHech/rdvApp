@@ -1,93 +1,73 @@
-const Appointment = require('../models/Appointment');
-const nodemailer = require('nodemailer');
-const User = require('../models/User');
+const Appointment = require('../models/appointment');
 
-const transport = nodemailer.createTransport({
-    host: process.env.MAIL_HOST,
-    port: process.env.MAIL_PORT,
-    secure: false,
-    auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASSWORD,
-    }
-});
-const sendEmail = async ({recipient, subject, message, sender}) => {
-    return await transport.sendMail({
-        from : sender,
-        to: recipient,
-        subject,
-        text: message,
-        html: '<h5>'+message+'</h5>',
-    })
-}
-// 📌 Create
+// Create appointment
 exports.createAppointment = async (req, res) => {
     try {
-        const { professionalId, date } = req.body;
-        const appointment = new Appointment({
-            client: req.user.id,
-            professional: professionalId,
-            date
+        const appointment = await Appointment.create({
+            ...req.body,
+            userId: req.user.id
         });
-        //await appointment.save();
-        const user = await User.findById(professionalId);
-        const client = await User.findById(req.user.id);
-
-        const sender = client.email;
-        const recipient = user.email;
-        const subject = "Rendez-vous";
-        const message = "Vous avez rendez vous dans la date "+date+" avec le client "+client.name;
-        sendEmail({recipient, subject, message, sender});
-        res.status(200).json({user});
-    } catch (err) {
-        res.status(500).send(err);
+        res.status(201).json(appointment);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
     }
 };
 
-// 📌 Read (list all)
+// Get all appointments
 exports.getAppointments = async (req, res) => {
     try {
-        const appointments = await Appointment.find({ client: req.user.id })
-            .populate('professional', 'name email')
-            .sort({ date: 1 });
-
-        res.json({ appointments : appointments });
-    } catch (err) {
-        res.status(500).send('Server Error');
+        const appointments = await Appointment.find({ userId: req.user.id });
+        res.json(appointments);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };
 
-// 📌 Show edit form
-/*
+// Get appointment for editing
 exports.editAppointmentForm = async (req, res) => {
     try {
-        const appointment = await Appointment.findById(req.params.id);
-        if (!appointment) return res.status(404).send('Appointment not found');
-
-        res.render('appointments/edit', { appointment, title: 'Edit Appointment' });
-    } catch (err) {
-        res.status(500).send('Server Error');
+        const appointment = await Appointment.findOne({
+            _id: req.params.id,
+            userId: req.user.id
+        });
+        if (!appointment) {
+            return res.status(404).json({ message: 'Appointment not found' });
+        }
+        res.json(appointment);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };
-*/
 
-// 📌 Update
+// Update appointment
 exports.updateAppointment = async (req, res) => {
     try {
-        const { date } = req.body;
-        await Appointment.findByIdAndUpdate(req.params.id, { date,  });
-        res.redirect('/appointments');
-    } catch (err) {
-        res.status(500).send('Server Error');
+        const appointment = await Appointment.findOneAndUpdate(
+            { _id: req.params.id, userId: req.user.id },
+            req.body,
+            { new: true }
+        );
+        if (!appointment) {
+            return res.status(404).json({ message: 'Appointment not found' });
+        }
+        res.json(appointment);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };
 
-// 📌 Delete
+// Delete appointment
 exports.deleteAppointment = async (req, res) => {
     try {
-        await Appointment.findByIdAndDelete(req.params.id);
-        res.redirect('/appointments');
-    } catch (err) {
-        res.status(500).send('Server Error');
+        const appointment = await Appointment.findOneAndDelete({
+            _id: req.params.id,
+            userId: req.user.id
+        });
+        if (!appointment) {
+            return res.status(404).json({ message: 'Appointment not found' });
+        }
+        res.json({ message: 'Appointment deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };

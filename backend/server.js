@@ -1,13 +1,6 @@
-const express = require('express');
-const cors = require('cors');
-const app = express();
+const app = require("./app"); // Import your main app (your app.js)
+const PORT = process.env.PORT || 5001;
 
-// CORS configuration
-app.use(cors({
-  origin: 'http://localhost:4200', // Your Angular app's URL
-  credentials: true, // Required for cookies, authorization headers with HTTPS
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization']
-}));
-
-// ... rest of your server code ...
+app.listen(PORT, () => {
+  console.log(`✅ Server running at http://localhost:${PORT}`);
+});

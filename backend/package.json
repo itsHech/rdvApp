@@ -4,7 +4,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+"start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -19,22 +19,6 @@
   "homepage": "https://github.com/Raslen-BenSalah/RDV-app#readme",
   "description": "",
   "dependencies": {
-<<<<<<< Updated upstream
-    "bcrypt": "^5.1.1",
-    "bcryptjs": "^3.0.2",
-    "connect-mongo": "^5.1.0",
-    "cookie-parser": "^1.4.7",
-    "dotenv": "^16.4.7",
-    "ejs": "^3.1.10",
-    "express": "^5.1.0",
-    "express-ejs-layouts": "^2.5.1",
-    "express-session": "^1.18.1",
-    "express-validator": "^7.2.1",
-    "jsonwebtoken": "^9.0.2",
-    "method-override": "^3.0.0",
-    "mongoose": "^8.13.1",
-    "nodemailer": "^6.10.1"
-=======
     "bcrypt": "^5.1.0",
     "bcryptjs": "^3.0.2",
     "body-parser": "^1.20.1",
@@ -42,16 +26,18 @@
     "cors": "^2.8.5",
     "debug": "~2.6.9",
     "dotenv": "^16.0.3",
+    "ejs": "^3.1.10",
     "express": "4.17.x",
+    "express-ejs-layouts": "^2.5.1",
     "express-session": "^1.18.1",
     "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.0",
+    "method-override": "^3.0.0",
     "mongoose": "^6.8.3",
     "morgan": "~1.9.1",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.1",
     "validator": "^13.7.0"
->>>>>>> Stashed changes
   },
   "devDependencies": {
     "nodemon": "^3.1.9"

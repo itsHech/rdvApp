@@ -16,6 +16,6 @@ router.get('/edit/:id', authenticateToken, appointmentController.editAppointment
 router.post('/edit/:id', authenticateToken, appointmentController.updateAppointment);
 
 // 📌 Delete appointment
-router.post('/delete/:id', authenticateToken, appointmentController.deleteAppointment);
+router.delete('/:id', authenticateToken, appointmentController.deleteAppointment);
 
 module.exports = router;
