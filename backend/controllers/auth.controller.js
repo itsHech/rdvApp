@@ -26,54 +26,75 @@ const SignUp = async (req, res) => {
 
   try {
     if (!isValid) {
-      res.status(404).json(errors);
-    } else {
-      await Users.findOne({ email: req.body.email }).then(async (exist) => {
-        if (exist) {
-          errors.email = 'User Exist';
-          res.status(404).json(errors);
-        } else {
-          const salt = await bcrypt.genSalt(10);
-          const hash = await bcrypt.hash(req.body.password, salt);
-          const user = await Users.create({
+      return res.status(404).json(errors);
+    }
+
+    // Check if user already exists
+    await Users.findOne({ email: req.body.email }).then(async (exist) => {
+      if (exist) {
+        errors.email = 'User Exist';
+        return res.status(404).json(errors);
+      } else {
+        // Hash the password
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(req.body.password, salt);
+
+        // Create the user document in the Users collection
+        const user = await Users.create({
+          name: req.body.name,
+          email: req.body.email,
+          civility: req.body.civility,
+          password: hash,
+          birthday: req.body.birthday,
+          governorate: req.body.governorate,
+          phone: req.body.phone,
+          profession: req.body.profession,
+          CV: req.file ? req.file.path : '',
+        });
+
+        // If the user is a professional, create the corresponding professional record
+        if (req.body.profession && req.body.profession.toLowerCase() === 'professional') {
+          const professionalData = {
             name: req.body.name,
             email: req.body.email,
-            civility: req.body.civility,
-            password: hash,
-            birthday: req.body.birthday,
-            governorate: req.body.governorate,
-            phone: req.body.phone,
-            profession: req.body.profession,
-            CV: req.file ? req.file.path : '',
-          });
-          const token = await Token.create({
-            userId: user._id,
-            token: createToken(user._id),
-          });
-
-          // send verification mail to user
-          var mailOptions = {
-            from: `Emna Recruitement`,
-            to: user.email,
-            subject: 'Verify your email',
-            html: `<h2> Hi Mr/Md ${user.name}, Thanks for registering on our site </h2>
-                   <h4> Please verify your email by clicking on the link below to continue... </h4> 
-                   <a href="https://emna-recruitment.tn/email-verification?token=${token.token}">Click Here!!</a>`,
+            specialty: req.body.specialty,  // Assuming 'specialty' is part of the request body
+            availableDates: req.body.availableDates, // Assuming this is an array of available dates
           };
-          // sending mail
-          await transporter.sendMail(mailOptions, (error, info) => {
-            if (error) console.log(error);
-            else console.log('Verification email is send to your email');
-          });
 
-          res.status(201).json({ token, user });
+          await Professional.create(professionalData);
         }
-      });
-    }
+
+        // Generate a token for the user
+        const token = await Token.create({
+          userId: user._id,
+          token: createToken(user._id),
+        });
+
+        // Send verification email to user
+        var mailOptions = {
+          from: `Emna Recruitement`,
+          to: user.email,
+          subject: 'Verify your email',
+          html: `<h2> Hi Mr/Md ${user.name}, Thanks for registering on our site </h2>
+                 <h4> Please verify your email by clicking on the link below to continue... </h4> 
+                 <a href="https://emna-recruitment.tn/email-verification?token=${token.token}">Click Here!!</a>`,
+        };
+        
+        // Sending the email
+        await transporter.sendMail(mailOptions, (error, info) => {
+          if (error) console.log(error);
+          else console.log('Verification email is sent to your email');
+        });
+
+        res.status(201).json({ token, user });
+      }
+    });
   } catch (error) {
     console.log(error.message);
+    res.status(500).json({ error: 'Server error' });
   }
 };
+
 const VerifyEmail = async (req, res) => {
   try {
     await Token.findOne({ token: req.query.token }).then(async (t_exist) => {
