@@ -16,13 +16,13 @@ if (!process.env.MONGO_URI) {
     console.error("❌ Error: MONGO_URI is missing in .env file");
     process.exit(1); // Stop the app if MongoDB URI is missing
 }
-
 // ✅ Middleware
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 
+/*
 // ✅ Session (must be before routes)
 app.use(session({
     secret: process.env.SESSION_SECRET || 'default_secret', // Provide a fallback
@@ -33,6 +33,7 @@ app.use(session({
 // ✅ Set View Engine
 app.set('view engine', 'ejs');
 
+*/
 // ✅ Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('✅ MongoDB Connected'))
@@ -42,11 +43,15 @@ mongoose.connect(process.env.MONGO_URI)
     });
 
 // ✅ Routes
-const authRoutes = require('./server/routes/auth');
-const mainRoutes = require('./server/routes/main');
-const appointmentRoutes = require('./server/routes/appointment');
-const professionalRoutes = require('./server/routes/professional');
-
+const authRoutes = require('./routes/auth');
+const mainRoutes = require('./routes/main');
+const appointmentRoutes = require('./routes/appointment');
+const professionalRoutes = require('./routes/professional');
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', '*');
+    next();
+  }); 
 
 app.use('/auth', authRoutes);
 app.use('/appointments', appointmentRoutes);
