@@ -1,26 +1,65 @@
-const Appointment = require('../models/appointment');
+const Appointment = require("../models/Appointment");
+const nodemailer = require("nodemailer");
+const User = require("../models/User");
 
-// Create appointment
+const transport = nodemailer.createTransport({
+  host: process.env.MAIL_HOST,
+  port: process.env.MAIL_PORT,
+  secure: false,
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASSWORD,
+  },
+});
+const sendEmail = async ({ recipient, subject, message, sender }) => {
+  return await transport.sendMail({
+    from: sender,
+    to: recipient,
+    subject,
+    text: message,
+    html: "<h5>" + message + "</h5>",
+  });
+};
+// 📌 Create
 exports.createAppointment = async (req, res) => {
-    try {
-        const appointment = await Appointment.create({
-            ...req.body,
-            userId: req.user.id
-        });
-        res.status(201).json(appointment);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
+  try {
+    const { professionalId, date } = req.body;
+    const appointment = new Appointment({
+      client: req.user.id,
+      professional: professionalId,
+      date,
+    });
+    //await appointment.save();
+    const user = await User.findById(professionalId);
+    const client = await User.findById(req.user.id);
+
+    const sender = client.email;
+    const recipient = user.email;
+    const subject = "Rendez-vous";
+    const message =
+      "Vous avez rendez vous dans la date " +
+      date +
+      " avec le client " +
+      client.name;
+    sendEmail({ recipient, subject, message, sender });
+    res.status(200).json({ user });
+  } catch (err) {
+    res.status(500).json({err : err});
+  }
 };
 
 // Get all appointments
 exports.getAppointments = async (req, res) => {
-    try {
-        const appointments = await Appointment.find({ userId: req.user.id });
-        res.json(appointments);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+
+  try {
+    const appointments = await Appointment.find({
+      $or: [ {client: req.user.id}, {professional: req.user.id}],
+    });
+
+    res.json({ appointments: appointments});
+  } catch (err) {
+    res.status(500).json({ err: err});
+  }
 };
 
 // Get appointment for editing
@@ -41,33 +80,23 @@ exports.editAppointmentForm = async (req, res) => {
 
 // Update appointment
 exports.updateAppointment = async (req, res) => {
-    try {
-        const appointment = await Appointment.findOneAndUpdate(
-            { _id: req.params.id, userId: req.user.id },
-            req.body,
-            { new: true }
-        );
-        if (!appointment) {
-            return res.status(404).json({ message: 'Appointment not found' });
-        }
-        res.json(appointment);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+
+  try {
+    const { date } = req.body;
+    await Appointment.findByIdAndUpdate(req.params.id, { date });
+    res.status(200).json({'message' : 'Update avec succés'});
+  } catch (err) {
+    res.status(500).json({err});
+  }
 };
 
 // Delete appointment
 exports.deleteAppointment = async (req, res) => {
-    try {
-        const appointment = await Appointment.findOneAndDelete({
-            _id: req.params.id,
-            userId: req.user.id
-        });
-        if (!appointment) {
-            return res.status(404).json({ message: 'Appointment not found' });
-        }
-        res.json({ message: 'Appointment deleted successfully' });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+
+  try {
+    await Appointment.findByIdAndDelete(req.params.id);
+    res.status(200).json({'message' : 'Delete avec succés'});
+  } catch (err) {
+    res.status(500).json({err});
+  }
 };
