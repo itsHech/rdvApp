@@ -63,11 +63,13 @@ const authRoutes = require("./routes/auth");
 const mainRoutes = require("./routes/main");
 const appointmentRoutes = require("./routes/appointment");
 const clientRoutes = require("./routes/client");
+const professionalRoutes = require("./routes/professional");
 
 app.use("/auth", authRoutes);
 app.use("/appointments", appointmentRoutes);
 app.use("/", mainRoutes);
 app.use("/clients", clientRoutes);
+app.use("/professional", professionalRoutes);
 
 // ✅ Start Server
 const PORT = process.env.PORT || 5001;
