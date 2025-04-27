@@ -5,6 +5,11 @@ const User = require("../models/User");
 // 📌 Create
 exports.createAppointment = async (req, res) => {
   try {
+    // Block if the user is a professional
+    if (req.user.role === 'professional') {
+      return res.status(403).json({ message: 'Professionals are not allowed to create appointments.' });
+    }
+
     const { professionalId, date } = req.body;
     const appointment = new Appointment({
       client: req.user.id,
@@ -21,15 +26,16 @@ exports.createAppointment = async (req, res) => {
     const recipient = user.email;
     const subject = "Rendez-vous";
     const message =
-      "Vous avez rendez vous dans la date " +
+      "Vous avez rendez-vous le " +
       date +
       " avec le client " +
       client.name;
+      
     sendEmail({ recipient, subject, message, sender });
 
-    res.status(200).json({ user });
+    res.status(200).json({ appointment });
   } catch (err) {
-    res.status(500).json({ err: err });
+    res.status(500).json({ err: err.message || err });
   }
 };
 
