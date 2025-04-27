@@ -9,12 +9,15 @@ const cors = require("cors");
 
 const app = express();
 
-app.use(cors({
-    origin: 'http://localhost:'+process.env.PORT,
-    credentials: true,
-		methods: 'GET,POST,PUT,DELETE,OPTIONS', 
-    allowedHeaders: 'Origin,X-Requested-With,Content-Type,Accept,Authorization',
-}));
+const corsOptions = {
+  origin: 'http://localhost:4200',
+  credentials: true,
+  methods: 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+  allowedHeaders: 'Origin,X-Requested-With,Content-Type,Accept,Authorization',
+};
+
+app.use(cors(corsOptions));
+
 
 // ✅ Load Environment Variables & Check Important Keys
 if (!process.env.JWT_SECRET) {
