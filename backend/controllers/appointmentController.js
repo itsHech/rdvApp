@@ -66,13 +66,19 @@ exports.getAppointments = async (req, res) => {
 // Get all appointments
 exports.getAllAppointments = async (req, res) => {
   try {
+    // Check if the user is an admin
+    if (!req.user || req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied: Admins only.' });
+    }
+
     const appointments = await Appointment.find();
 
     res.json({ appointments: appointments });
   } catch (err) {
-    res.status(500).json({ err: err });
+    res.status(500).json({ err: err.message || err });
   }
 };
+
 
 // Update appointment
 exports.updateAppointment = async (req, res) => {
