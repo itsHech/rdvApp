@@ -65,11 +65,12 @@ export class AppointmentService {
   }
 
   createAppointment(appointment: NewAppointment): Observable<Appointment> {
-    return this.http.post<Appointment>(this.baseUrl, appointment, {
+    return this.http.post<Appointment>(`${this.baseUrl}/create`, appointment, {
       headers: new HttpHeaders({
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
         'Content-Type': 'application/json'
       })
     });
   }
+  
 }
