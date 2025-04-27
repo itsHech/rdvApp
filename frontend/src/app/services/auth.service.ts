@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +9,10 @@ import { Observable } from 'rxjs';
 export class AuthService {
   private baseUrl = 'http://localhost:5001/auth';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {}
 
   login(credentials: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/login`, credentials, {
@@ -30,5 +34,13 @@ export class AuthService {
 
   setToken(token: string): void {
     localStorage.setItem('token', token);
+  }
+
+  navigateBasedOnRole(role: string) {
+    if (role === 'client') {
+      this.router.navigate(['/client/dashboard']);
+    } else if (role === 'professional') {
+      this.router.navigate(['/professionals/dashboard']);
+    }
   }
 }
