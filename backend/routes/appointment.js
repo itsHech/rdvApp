@@ -12,9 +12,6 @@ router.get('/', authenticateToken, appointmentController.getAppointments);
 // 📌 Get all appointments (for logged-in user)
 router.get('/all', authenticateToken, appointmentController.getAllAppointments);
 
-// 📌 Edit appointment form
-router.get('/edit/:id', authenticateToken, appointmentController.editAppointmentForm);
-
 // 📌 Submit appointment update
 router.post('/edit/:id', authenticateToken, appointmentController.updateAppointment);
 

@@ -16,8 +16,9 @@ exports.getClients = async (req, res) => {
 exports.getClientById = async (req, res) => {
     try {
         const clients = await User.find(
-            { _id : req.params.id }
+            { $and : [ {_id : req.params.id}, {role : 'client'} ] }
         );
+        if (!clients) return res.status(404).json({ error: 'Not found' });
         res.json(clients);
     } catch (err) {
         res.status(500).json({ error: err.message });
