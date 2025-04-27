@@ -59,12 +59,12 @@ mongoose
 const authRoutes = require("./routes/auth");
 const mainRoutes = require("./routes/main");
 const appointmentRoutes = require("./routes/appointment");
-const professionalRoutes = require("./routes/professional");
+const clientRoutes = require("./routes/client");
 
 app.use("/auth", authRoutes);
 app.use("/appointments", appointmentRoutes);
 app.use("/", mainRoutes);
-app.use("/professionals", professionalRoutes);
+app.use("/clients", clientRoutes);
 
 // ✅ Start Server
 const PORT = process.env.PORT || 5001;
