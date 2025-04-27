@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AppointmentService } from '../../services/appointment.service';
+import { UserService } from '../../services/user.service';
+
 interface Appointment {
   id: string;
   time: string;
@@ -14,10 +16,24 @@ interface Appointment {
   status: 'pending' | 'confirmed' | 'cancelled';
 }
 
+interface Professional {
+  id: string;
+  name: string;
+  speciality: string;
+}
+
+interface NewAppointment {
+  professionalId: string;
+  date: string;
+  time: string;
+  reason: string;
+}
+
 @Component({
   selector: 'app-client-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],  // Added FormsModule here
+  imports: [CommonModule, RouterLink, FormsModule],
+  providers: [AppointmentService, UserService],  // Add providers here
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
@@ -30,13 +46,62 @@ export class ClientDashboardComponent implements OnInit {
   statusFilter: string = 'all';
   isLoading: boolean = false;
   errorMessage: string = '';
+  
+  showCreateModal = false;
+  professionals: Professional[] = [];
+  newAppointment: NewAppointment = {
+    professionalId: '',
+    date: '',
+    time: '',
+    reason: ''
+  };
+
+  constructor(
+    private appointmentService: AppointmentService,
+    private userService: UserService
+  ) {}
 
   ngOnInit() {
     this.loadAppointments();
+    this.loadProfessionals();
   }
-  
-constructor(private appointmentService: AppointmentService,
-) {}
+
+  loadProfessionals() {
+    this.userService.getProfessionals().subscribe({
+      next: (data) => {
+        this.professionals = data;
+      },
+      error: (err) => {
+        console.error('Failed to load professionals', err);
+      }
+    });
+  }
+
+  openCreateAppointmentModal() {
+    this.showCreateModal = true;
+  }
+
+  closeCreateModal() {
+    this.showCreateModal = false;
+    this.newAppointment = {
+      professionalId: '',
+      date: '',
+      time: '',
+      reason: ''
+    };
+  }
+
+  createAppointment() {
+    this.appointmentService.createAppointment(this.newAppointment).subscribe({
+      next: () => {
+        this.loadAppointments();
+        this.closeCreateModal();
+      },
+      error: (err) => {
+        console.error('Failed to create appointment', err);
+      }
+    });
+  }
   loadAppointments() {
     this.isLoading = true;
     this.errorMessage = '';
@@ -69,7 +134,7 @@ constructor(private appointmentService: AppointmentService,
       next: () => {
         console.log('Status updated');
       },
-      error: (err) => {
+      error: (err: Error) => {  // Add type annotation here
         console.error('Failed to update status', err);
       }
     });

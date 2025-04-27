@@ -13,6 +13,13 @@ interface Appointment {
   status: 'pending' | 'confirmed' | 'cancelled';
 }
 
+interface NewAppointment {
+  professionalId: string;
+  date: string;
+  time: string;
+  reason: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -50,6 +57,15 @@ export class AppointmentService {
 
   rescheduleAppointment(id: string, newDate: string, newTime: string): Observable<Appointment> {
     return this.http.patch<Appointment>(`${this.baseUrl}/${id}/reschedule`, { date: newDate, time: newTime }, {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json'
+      })
+    });
+  }
+
+  createAppointment(appointment: NewAppointment): Observable<Appointment> {
+    return this.http.post<Appointment>(this.baseUrl, appointment, {
       headers: new HttpHeaders({
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
         'Content-Type': 'application/json'
