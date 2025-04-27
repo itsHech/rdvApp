@@ -100,12 +100,18 @@ exports.updateAppointment = async (req, res) => {
 // Delete appointment
 exports.deleteAppointment = async (req, res) => {
   try {
+    // Allow only admins
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Only admins can delete appointments.' });
+    }
+
     await Appointment.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "Delete avec succés" });
+    res.status(200).json({ message: "Suppression avec succès" });
   } catch (err) {
-    res.status(500).json({ err });
+    res.status(500).json({ err: err.message || err });
   }
 };
+
 
 // send Email 
 
