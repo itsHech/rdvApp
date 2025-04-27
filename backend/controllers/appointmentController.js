@@ -77,13 +77,19 @@ exports.getAllAppointments = async (req, res) => {
 // Update appointment
 exports.updateAppointment = async (req, res) => {
   try {
+    // Block if the user is a client
+    if (req.user.role === 'client') {
+      return res.status(403).json({ message: 'Clients are not allowed to update appointments.' });
+    }
+
     const { date } = req.body;
     await Appointment.findByIdAndUpdate(req.params.id, { date });
-    res.status(200).json({ message: "Update avec succés" });
+    res.status(200).json({ message: "Update avec succès" });
   } catch (err) {
-    res.status(500).json({ err });
+    res.status(500).json({ err: err.message || err });
   }
 };
+
 
 // Delete appointment
 exports.deleteAppointment = async (req, res) => {
