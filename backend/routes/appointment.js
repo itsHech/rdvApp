@@ -9,6 +9,9 @@ router.post('/create', authenticateToken, appointmentController.createAppointmen
 // 📌 Get all appointments (for logged-in user)
 router.get('/', authenticateToken, appointmentController.getAppointments);
 
+// 📌 Get all appointments (for logged-in user)
+router.get('/all', authenticateToken, appointmentController.getAllAppointments);
+
 // 📌 Edit appointment form
 router.get('/edit/:id', authenticateToken, appointmentController.editAppointmentForm);
 

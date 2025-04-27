@@ -28,7 +28,7 @@ exports.createAppointment = async (req, res) => {
       client: req.user.id,
       professional: professionalId,
       date,
-      description: 'test test test'
+      description: "test test test",
     });
     await appointment.save();
 
@@ -44,73 +44,81 @@ exports.createAppointment = async (req, res) => {
       " avec le client " +
       client.name;
     sendEmail({ recipient, subject, message, sender });
-    
+
     res.status(200).json({ user });
   } catch (err) {
-    res.status(500).json({err : err});
+    res.status(500).json({ err: err });
   }
 };
 
 // Get all appointments
 exports.getAppointments = async (req, res) => {
-
   try {
     if (req.query.status) {
-        const appointments = await Appointment.find({
-        $and : [
-            {$or: [ { client: req.user.id}, {professional: req.user.id} ]}, 
-            { status : req.query.status }
-        ]
-        });
+      const appointments = await Appointment.find({
+        $and: [
+          { $or: [{ client: req.user.id }, { professional: req.user.id }] },
+          { status: req.query.status },
+        ],
+      });
 
-        res.json({ appointments: appointments});
+      res.json({ appointments: appointments });
     } else {
-        const appointments = await Appointment.find({
-            $or: [ {client: req.user.id}, {professional: req.user.id}],
-            });
-    
-            res.json({ appointments: appointments});
+      const appointments = await Appointment.find({
+        $or: [{ client: req.user.id }, { professional: req.user.id }],
+      });
+
+      res.json({ appointments: appointments });
     }
   } catch (err) {
-    res.status(500).json({ err: err});
+    res.status(500).json({ err: err });
+  }
+};
+
+// Get all appointments
+exports.getAllAppointments = async (req, res) => {
+  try {
+    const appointments = await Appointment.find();
+
+    res.json({ appointments: appointments });
+  } catch (err) {
+    res.status(500).json({ err: err });
   }
 };
 
 // Get appointment for editing
 exports.editAppointmentForm = async (req, res) => {
-    try {
-        const appointment = await Appointment.findOne({
-            _id: req.params.id,
-            userId: req.user.id
-        });
-        if (!appointment) {
-            return res.status(404).json({ message: 'Appointment not found' });
-        }
-        res.json(appointment);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+  try {
+    const appointment = await Appointment.findOne({
+      _id: req.params.id,
+      userId: req.user.id,
+    });
+    if (!appointment) {
+      return res.status(404).json({ message: "Appointment not found" });
     }
+    res.json(appointment);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 // Update appointment
 exports.updateAppointment = async (req, res) => {
-
   try {
     const { date } = req.body;
     await Appointment.findByIdAndUpdate(req.params.id, { date });
-    res.status(200).json({'message' : 'Update avec succés'});
+    res.status(200).json({ message: "Update avec succés" });
   } catch (err) {
-    res.status(500).json({err});
+    res.status(500).json({ err });
   }
 };
 
 // Delete appointment
 exports.deleteAppointment = async (req, res) => {
-
   try {
     await Appointment.findByIdAndDelete(req.params.id);
-    res.status(200).json({'message' : 'Delete avec succés'});
+    res.status(200).json({ message: "Delete avec succés" });
   } catch (err) {
-    res.status(500).json({err});
+    res.status(500).json({ err });
   }
 };
