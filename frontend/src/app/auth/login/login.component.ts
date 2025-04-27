@@ -32,6 +32,7 @@ export class LoginComponent {
     this.authService.login(this.loginData).subscribe({
       next: (response) => {
         this.authService.setToken(response.token);
+
         // Navigate based on user role
         if (response.user.role === 'professional') {
           this.router.navigate(['/professionals/dashboard']);
@@ -40,6 +41,8 @@ export class LoginComponent {
         } else {
           this.router.navigate(['/login']);
         }
+
+        this.isLoading = false; // ✅ Reset loading after successful login
       },
       error: (error) => {
         this.errorMessage = error.error.message || 'Login failed';
