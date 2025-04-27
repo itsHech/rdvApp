@@ -1,0 +1,67 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <h1>Professional Dashboard</h1>
+    <div class="user-info">
+      <span>Welcome, {{professionalName}}</span>
+    </div>
+  </header>
+
+  <div class="dashboard-stats">
+    <div class="stat-card">
+      <h3>Today's Appointments</h3>
+      <p class="stat-number">{{getTodayAppointments()}}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Total clients</h3>
+      <p class="stat-number">{{getTotalPatients()}}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Upcoming Appointments</h3>
+      <p class="stat-number">{{getUpcomingAppointments()}}</p>
+    </div>
+  </div>
+
+  <div class="appointments-list">
+    <h2>Appointments</h2>
+    <div class="filters">
+      <select [(ngModel)]="statusFilter" (change)="filterAppointments()">
+        <option value="all">All Status</option>
+        <option value="pending">Pending</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    </div>
+
+    <div *ngIf="filteredAppointments.length === 0" class="no-appointments">
+      <p>No appointments available</p>
+    </div>
+
+    <div class="appointment-card" *ngFor="let appointment of filteredAppointments">
+      <div class="appointment-time">
+        <div>{{appointment.date | date:'mediumDate'}}</div>
+        <div>{{appointment.time}}</div>
+      </div>
+      <div class="appointment-details">
+        <h4>{{appointment.patientName}}</h4>
+        <p>{{appointment.reason}}</p>
+        <div class="patient-info">
+          <small>Email: {{appointment.patientEmail}}</small>
+          <small>Phone: {{appointment.patientPhone}}</small>
+        </div>
+      </div>
+      <div class="appointment-status">
+        <select [(ngModel)]="appointment.status" 
+                (change)="updateAppointmentStatus(appointment)"
+                [ngClass]="appointment.status">
+          <option value="pending">Pending</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div class="appointment-actions">
+        <a [routerLink]="['/appointments', appointment.id]" class="btn-primary">View Details</a>
+        <a [routerLink]="['/appointments', appointment.id, 'reschedule']" class="btn-secondary">Reschedule</a>
+      </div>
+    </div>
+  </div>
+</div>

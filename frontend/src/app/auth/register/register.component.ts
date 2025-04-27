@@ -5,6 +5,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 
+interface RegisterResponse {
+  token: string;
+  message: string;
+}
+
 @Component({
   selector: 'app-register',
   standalone: true,
@@ -39,11 +44,11 @@ export class RegisterComponent {
     this.errorMessage = '';
 
     this.authService.register(this.registerData).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         this.authService.setToken(response.token);
-        this.router.navigate(['/appointments']);
+        this.router.navigate(['/login']);
       },
-      error: (error) => {
+      error: (error: { error: { message: string } }) => {
         this.errorMessage = error.error.message || 'Registration failed';
         this.isLoading = false;
       }

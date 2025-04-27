@@ -10,34 +10,25 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  register(userData: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/register`, userData);
-  }
-
   login(credentials: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/login`, credentials);
+    return this.http.post(`${this.baseUrl}/login`, credentials, {
+      withCredentials: true,
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    });
   }
 
-  getCurrentUser(): Observable<any> {
-    const headers = new HttpHeaders({
-      'Authorization': this.getToken() || ''
+  register(userData: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/register`, userData, {
+      withCredentials: true,
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
     });
-    return this.http.get(`${this.baseUrl}/me`, { headers });
   }
 
   setToken(token: string): void {
     localStorage.setItem('token', token);
-  }
-
-  getToken(): string | null {
-    return localStorage.getItem('token');
-  }
-
-  logout(): void {
-    localStorage.removeItem('token');
-  }
-
-  isLoggedIn(): boolean {
-    return !!this.getToken();
   }
 }
