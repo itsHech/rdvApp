@@ -12,7 +12,7 @@ interface ProfessionalInfo {
   providedIn: 'root'
 })
 export class ProfessionalService {
-  private apiUrl = 'http://localhost:5001/professional';
+  private apiUrl = 'http://localhost:5001/professionals';
 
   constructor(private http: HttpClient) {}
 

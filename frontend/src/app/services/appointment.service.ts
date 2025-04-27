@@ -17,7 +17,7 @@ interface Appointment {
   providedIn: 'root'
 })
 export class AppointmentService {
-  private baseUrl = 'http://localhost:5001/api/appointments';
+  private baseUrl = 'http://localhost:5001/appointments';
 
   constructor(private http: HttpClient) {}
 
