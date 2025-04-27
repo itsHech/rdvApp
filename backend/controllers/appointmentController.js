@@ -28,8 +28,10 @@ exports.createAppointment = async (req, res) => {
       client: req.user.id,
       professional: professionalId,
       date,
+      description: 'test test test'
     });
-    //await appointment.save();
+    await appointment.save();
+
     const user = await User.findById(professionalId);
     const client = await User.findById(req.user.id);
 
@@ -42,6 +44,7 @@ exports.createAppointment = async (req, res) => {
       " avec le client " +
       client.name;
     sendEmail({ recipient, subject, message, sender });
+    
     res.status(200).json({ user });
   } catch (err) {
     res.status(500).json({err : err});
