@@ -52,11 +52,22 @@ exports.createAppointment = async (req, res) => {
 exports.getAppointments = async (req, res) => {
 
   try {
-    const appointments = await Appointment.find({
-      $or: [ {client: req.user.id}, {professional: req.user.id}],
-    });
+    if (req.query.status) {
+        const appointments = await Appointment.find({
+        $and : [
+            {$or: [ { client: req.user.id}, {professional: req.user.id} ]}, 
+            { status : req.query.status }
+        ]
+        });
 
-    res.json({ appointments: appointments});
+        res.json({ appointments: appointments});
+    } else {
+        const appointments = await Appointment.find({
+            $or: [ {client: req.user.id}, {professional: req.user.id}],
+            });
+    
+            res.json({ appointments: appointments});
+    }
   } catch (err) {
     res.status(500).json({ err: err});
   }
