@@ -22,7 +22,7 @@ export class RegisterComponent {
     name: '',
     email: '',
     password: '',
-    role: 'client',
+    role: '',
     civility: '',
     birthday: '',
     governorate: '',

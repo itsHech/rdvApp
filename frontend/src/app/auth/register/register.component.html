@@ -28,19 +28,33 @@
       <div class="form-group">
         <input type="tel" [(ngModel)]="registerData.phone" name="phone" placeholder="Phone Number" required>
       </div>
+
+      <!-- ✅ Role Selection -->
       <div class="form-group">
+        <select [(ngModel)]="registerData.role" name="role" required>
+          <option value="">Select Role</option>
+          <option value="client">Client</option>
+          <option value="professional">Professional</option>
+        </select>
+      </div>
+
+      <!-- ✅ Show Profession Field Only if role === 'professional' -->
+      <div class="form-group" *ngIf="registerData.role === 'professional'">
         <input type="text" [(ngModel)]="registerData.profession" name="profession" placeholder="Profession" required>
       </div>
+
       <div class="error-message" *ngIf="errorMessage">
         {{ errorMessage }}
       </div>
       <div class="success-message" *ngIf="successMessage">
         {{ successMessage }}
       </div>
+
       <button type="submit" [disabled]="!registerForm.valid || isLoading">
         {{ isLoading ? 'Creating Account...' : 'Sign Up' }}
       </button>
     </form>
+
     <p class="login-link">
       Already have an account? <a routerLink="/login">Login</a>
     </p>
