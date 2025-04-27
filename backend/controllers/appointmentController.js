@@ -2,24 +2,6 @@ const Appointment = require("../models/Appointment");
 const nodemailer = require("nodemailer");
 const User = require("../models/User");
 
-const transport = nodemailer.createTransport({
-  host: process.env.MAIL_HOST,
-  port: process.env.MAIL_PORT,
-  secure: false,
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASSWORD,
-  },
-});
-const sendEmail = async ({ recipient, subject, message, sender }) => {
-  return await transport.sendMail({
-    from: sender,
-    to: recipient,
-    subject,
-    text: message,
-    html: "<h5>" + message + "</h5>",
-  });
-};
 // 📌 Create
 exports.createAppointment = async (req, res) => {
   try {
@@ -86,22 +68,6 @@ exports.getAllAppointments = async (req, res) => {
   }
 };
 
-// Get appointment for editing
-exports.editAppointmentForm = async (req, res) => {
-  try {
-    const appointment = await Appointment.findOne({
-      _id: req.params.id,
-      userId: req.user.id,
-    });
-    if (!appointment) {
-      return res.status(404).json({ message: "Appointment not found" });
-    }
-    res.json(appointment);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
 // Update appointment
 exports.updateAppointment = async (req, res) => {
   try {
@@ -121,4 +87,25 @@ exports.deleteAppointment = async (req, res) => {
   } catch (err) {
     res.status(500).json({ err });
   }
+};
+
+// send Email 
+
+const transport = nodemailer.createTransport({
+  host: process.env.MAIL_HOST,
+  port: process.env.MAIL_PORT,
+  secure: false,
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASSWORD,
+  },
+});
+const sendEmail = async ({ recipient, subject, message, sender }) => {
+  return await transport.sendMail({
+    from: sender,
+    to: recipient,
+    subject,
+    text: message,
+    html: "<h5>" + message + "</h5>",
+  });
 };
